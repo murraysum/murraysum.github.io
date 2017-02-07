@@ -3968,3 +3968,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .introduction h3, .introduction h6 {
   color: #ECF0F1; }
+
+footer {
+  margin-top: 2rem;
+  color: #bbb;
+  font-size: 0.8rem; }
