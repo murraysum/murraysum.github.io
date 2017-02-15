@@ -13,4 +13,5 @@ s=w<=b?this.$handle:this.$handle2}}this._setHandlePos(s,a,r)}},{key:"_adjustValu
 
 
 
-;
+
+$(document).foundation();
