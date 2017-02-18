@@ -2,9 +2,9 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Murray Summers</title>
   <subtitle>Blog</subtitle>
-  <id>https://murraysum.github.io/blog</id>
-  <link href="https://murraysum.github.io/blog"/>
-  <link href="https://murraysum.github.io/blog/feed.xml" rel="self"/>
+  <id>http://www.murraysum.com/blog</id>
+  <link href="http://www.murraysum.com/blog"/>
+  <link href="http://www.murraysum.com/blog/feed.xml" rel="self"/>
   <author>
     <name>Murray Summers</name>
   </author>
