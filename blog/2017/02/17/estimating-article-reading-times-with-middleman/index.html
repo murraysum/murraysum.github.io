@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+
+    <title>Estimating article reading times with Middleman - Murray Summers</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Lato|Source+Sans+Pro" rel="stylesheet">
+
+    <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/blog/feed.xml" />
+
+    <link href="http://www.murraysum.com/blog/2017/02/17/estimating-article-reading-times-with-middleman/" rel="canonical" />
+    <link href="/stylesheets/site.css" rel="stylesheet" />
+    <script src="/javascripts/all.js" async="async"></script>
+  </head>
+
+  <body class="blog blog_2017 blog_2017_02 blog_2017_02_17 blog_2017_02_17_estimating-article-reading-times-with-middleman blog_2017_02_17_estimating-article-reading-times-with-middleman_index">
+
+    <div class="full-width-row menu">
+  <div class="row menu_items">
+    <div class="columns small-4 medium-4 large-8">
+      <a href="/">MS</a>
+    </div>
+    <div class="columns small-8 medium-4 large-4 text-right">
+      <a href="/about/" class="menu_item">About</a>
+      <a href="/blog/" class="menu_item">Blog</a>
+      <a href="/projects/" class="">Projects</a>
+    </div>
+  </div>
+</div>
+
+
+    
+
+    <div class="row">
+      <div class="columns small-12">
+        <main role="main">
+            <div class="row">
+    <div class="columns medium-8 large-8">
+      <h3>Estimating article reading times with Middleman</h3>
+      <p>MIDDLEMAN</p>
+      <p>Estimated reading time 4 minutes</p>
+      <p>Posted on 17 Feb 2017</p>
+      <p>
+  At the top of every <a href="https://medium.com/">Medium</a> article there is an estimated reading time
+  allowing users to decide whether to read an article now, later or not at all. How can we provide estimates for articles generated using <a href="https://middlemanapp.com">Middleman</a>?
+
+</p>
+
+<img src="/images/blog/estimating-article-reading-times-with-middleman/medium-estimated-reading-times.png" alt="Medium article showing estimated reading time" class="article_image" />
+
+<p>
+  Before we get started adding estimated reading times we will assume that you
+  have already <a href="https://middlemanapp.com/basics/start_new_site/">created a Middleman site</a>
+  and <a href="https://middlemanapp.com/basics/blogging/">installed the middleman-blog extension</a>.
+  Unfortunately, the middleman-blog extension doesn't provide any support for
+  reading times. However, luckily there are a number of libraries that can
+  calculate reading times such as <a href="https://github.com/garethrees/readingtime">readingtime</a>.
+</p>
+
+<p>
+  The <a href="https://github.com/garethrees/readingtime">readingtime</a>
+  library calculates a reading time given some text and the number of words
+  that can be read in a given amount of time.
+</p>
+
+<p>
+  To get started let's add the readingtime gem to our Gemfile:
+</p>
+
+<pre class="highlight ruby"><code>  <span class="n">gem</span> <span class="s2">"readingtime"</span>
+</code></pre>
+<p>
+  Once this line is added we can install the dependency using bundler:
+</p>
+
+<pre class="highlight shell"><code>  bundle install
+</code></pre>
+<p>
+  This will have installed the dependency for our middleman site. Before we can
+  use the gem in our article layout we first need to make it available to our
+  middleman site by adding <code>require "readingtime"</code> to our
+  <code>config.rb</code>.
+</p>
+
+<p>
+  We are now able to calculate the reading times for each blog article. Each blog
+  typically has an <code>index.html.erb</code> page where links to all of the articles
+  appear. By default the middleman-blog extension generates one if you have run
+  one of:
+</p>
+
+<pre class="highlight shell"><code>  middleman init MY_BLOG_PROJECT --template<span class="o">=</span>blog
+  middleman init --template<span class="o">=</span>blog
+</code></pre>
+<p>
+  In any case you should have an <code>index.html.erb</code> page looking something similar
+  to this:
+</p>
+
+<pre class="highlight erb"><code>  <span class="cp">&lt;%</span> <span class="n">page_articles</span><span class="p">.</span><span class="nf">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">article</span><span class="p">,</span> <span class="n">i</span><span class="o">|</span> <span class="cp">%&gt;</span>
+    <span class="nt">&lt;h2&gt;</span>
+      <span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">article</span><span class="p">.</span><span class="nf">title</span><span class="p">,</span> <span class="n">article</span> <span class="cp">%&gt;</span>
+      <span class="nt">&lt;span&gt;</span><span class="cp">&lt;%=</span> <span class="n">article</span><span class="p">.</span><span class="nf">date</span><span class="p">.</span><span class="nf">strftime</span><span class="p">(</span><span class="s1">'%b %e'</span><span class="p">)</span> <span class="cp">%&gt;</span><span class="nt">&lt;/span&gt;</span>
+    <span class="nt">&lt;/h2&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">article</span><span class="p">.</span><span class="nf">body</span> <span class="cp">%&gt;</span>
+  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+</code></pre>
+<p>
+  Here we are looping around each blog article and rendering a link to the
+  article, the date the article was posted and finally the article's body
+  content. To render reading times we can add the following inside the loop:
+</p>
+
+<pre class="highlight erb"><code>  <span class="cp">&lt;%=</span> <span class="n">article</span><span class="p">.</span><span class="nf">body</span><span class="p">.</span><span class="nf">reading_time</span> <span class="ss">:format</span> <span class="o">=&gt;</span> <span class="ss">:approx</span> <span class="cp">%&gt;</span>
+</code></pre>
+<p>
+  Here we are calling <code>reading_time</code> on the article's body content and specifying
+  how the time should be formatted. The readingtime gem supports a variety
+  <a href="https://github.com/garethrees/readingtime#options">different formatting options</a>.
+</p>
+
+<p>
+  You may have realised that if the article's body content contained HTML then
+  this would be counted towards our reading time and would make our estimate
+  less accurate. This is true, however this is
+  unlikely to shift the reading time significantly.
+</p>
+
+    </div>
+  </div>
+
+        </main>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns">
+        <footer role="footer">
+          &copy; 2017 Copyright Murray Summers. All rights reserved.
+
+        </footer>
+      </div>
+    </div>
+
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92021231-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </body>
+</html>

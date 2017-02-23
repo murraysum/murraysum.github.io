@@ -5,7 +5,104 @@
   <id>http://www.murraysum.com/blog</id>
   <link href="http://www.murraysum.com/blog"/>
   <link href="http://www.murraysum.com/blog/feed.xml" rel="self"/>
+  <updated>2017-02-17T14:07:00+00:00</updated>
   <author>
     <name>Murray Summers</name>
   </author>
+  <entry>
+    <title>Estimating article reading times with Middleman</title>
+    <link rel="alternate" href="http://www.murraysum.com/blog/2017/02/17/estimating-article-reading-times-with-middleman/"/>
+    <id>http://www.murraysum.com/blog/2017/02/17/estimating-article-reading-times-with-middleman/</id>
+    <published>2017-02-17T14:07:00+00:00</published>
+    <updated>2017-02-23T18:32:57+00:00</updated>
+    <author>
+      <name>Murray Summers</name>
+    </author>
+    <content type="html">&lt;p&gt;
+  At the top of every &lt;a href="https://medium.com/"&gt;Medium&lt;/a&gt; article there is an estimated reading time
+  allowing users to decide whether to read an article now, later or not at all. How can we provide estimates for articles generated using &lt;a href="https://middlemanapp.com"&gt;Middleman&lt;/a&gt;?
+
+&lt;/p&gt;
+
+&lt;img src="/images/blog/estimating-article-reading-times-with-middleman/medium-estimated-reading-times.png" alt="Medium article showing estimated reading time" class="article_image" /&gt;
+
+&lt;p&gt;
+  Before we get started adding estimated reading times we will assume that you
+  have already &lt;a href="https://middlemanapp.com/basics/start_new_site/"&gt;created a Middleman site&lt;/a&gt;
+  and &lt;a href="https://middlemanapp.com/basics/blogging/"&gt;installed the middleman-blog extension&lt;/a&gt;.
+  Unfortunately, the middleman-blog extension doesn't provide any support for
+  reading times. However, luckily there are a number of libraries that can
+  calculate reading times such as &lt;a href="https://github.com/garethrees/readingtime"&gt;readingtime&lt;/a&gt;.
+&lt;/p&gt;
+
+&lt;p&gt;
+  The &lt;a href="https://github.com/garethrees/readingtime"&gt;readingtime&lt;/a&gt;
+  library calculates a reading time given some text and the number of words
+  that can be read in a given amount of time.
+&lt;/p&gt;
+
+&lt;p&gt;
+  To get started let's add the readingtime gem to our Gemfile:
+&lt;/p&gt;
+
+&lt;pre class="highlight ruby"&gt;&lt;code&gt;  &lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s2"&gt;"readingtime"&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  Once this line is added we can install the dependency using bundler:
+&lt;/p&gt;
+
+&lt;pre class="highlight shell"&gt;&lt;code&gt;  bundle install
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  This will have installed the dependency for our middleman site. Before we can
+  use the gem in our article layout we first need to make it available to our
+  middleman site by adding &lt;code&gt;require "readingtime"&lt;/code&gt; to our
+  &lt;code&gt;config.rb&lt;/code&gt;.
+&lt;/p&gt;
+
+&lt;p&gt;
+  We are now able to calculate the reading times for each blog article. Each blog
+  typically has an &lt;code&gt;index.html.erb&lt;/code&gt; page where links to all of the articles
+  appear. By default the middleman-blog extension generates one if you have run
+  one of:
+&lt;/p&gt;
+
+&lt;pre class="highlight shell"&gt;&lt;code&gt;  middleman init MY_BLOG_PROJECT --template&lt;span class="o"&gt;=&lt;/span&gt;blog
+  middleman init --template&lt;span class="o"&gt;=&lt;/span&gt;blog
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  In any case you should have an &lt;code&gt;index.html.erb&lt;/code&gt; page looking something similar
+  to this:
+&lt;/p&gt;
+
+&lt;pre class="highlight erb"&gt;&lt;code&gt;  &lt;span class="cp"&gt;&amp;lt;%&lt;/span&gt; &lt;span class="n"&gt;page_articles&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;each_with_index&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;article&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="cp"&gt;%&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;h2&amp;gt;&lt;/span&gt;
+      &lt;span class="cp"&gt;&amp;lt;%=&lt;/span&gt; &lt;span class="n"&gt;link_to&lt;/span&gt; &lt;span class="n"&gt;article&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;title&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;article&lt;/span&gt; &lt;span class="cp"&gt;%&amp;gt;&lt;/span&gt;
+      &lt;span class="nt"&gt;&amp;lt;span&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&amp;lt;%=&lt;/span&gt; &lt;span class="n"&gt;article&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;date&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;strftime&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'%b %e'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="cp"&gt;%&amp;gt;&lt;/span&gt;&lt;span class="nt"&gt;&amp;lt;/span&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;/h2&amp;gt;&lt;/span&gt;
+    &lt;span class="cp"&gt;&amp;lt;%=&lt;/span&gt; &lt;span class="n"&gt;article&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;body&lt;/span&gt; &lt;span class="cp"&gt;%&amp;gt;&lt;/span&gt;
+  &lt;span class="cp"&gt;&amp;lt;%&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt; &lt;span class="cp"&gt;%&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  Here we are looping around each blog article and rendering a link to the
+  article, the date the article was posted and finally the article's body
+  content. To render reading times we can add the following inside the loop:
+&lt;/p&gt;
+
+&lt;pre class="highlight erb"&gt;&lt;code&gt;  &lt;span class="cp"&gt;&amp;lt;%=&lt;/span&gt; &lt;span class="n"&gt;article&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;body&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;reading_time&lt;/span&gt; &lt;span class="ss"&gt;:format&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="ss"&gt;:approx&lt;/span&gt; &lt;span class="cp"&gt;%&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  Here we are calling &lt;code&gt;reading_time&lt;/code&gt; on the article's body content and specifying
+  how the time should be formatted. The readingtime gem supports a variety
+  &lt;a href="https://github.com/garethrees/readingtime#options"&gt;different formatting options&lt;/a&gt;.
+&lt;/p&gt;
+
+&lt;p&gt;
+  You may have realised that if the article's body content contained HTML then
+  this would be counted towards our reading time and would make our estimate
+  less accurate. This is true, however this is
+  unlikely to shift the reading time significantly.
+&lt;/p&gt;
+</content>
+  </entry>
 </feed>
