@@ -5,16 +5,159 @@
   <id>http://www.murraysum.com/blog</id>
   <link href="http://www.murraysum.com/blog"/>
   <link href="http://www.murraysum.com/blog/feed.xml" rel="self"/>
-  <updated>2017-02-23T14:07:00+00:00</updated>
+  <updated>2017-05-21T15:07:00+01:00</updated>
   <author>
     <name>Murray Summers</name>
   </author>
+  <entry>
+    <title>How to test a Middleman static site</title>
+    <link rel="alternate" href="http://www.murraysum.com/blog/2017/05/21/how-to-test-a-middleman-static-site/"/>
+    <id>http://www.murraysum.com/blog/2017/05/21/how-to-test-a-middleman-static-site/</id>
+    <published>2017-05-21T15:07:00+01:00</published>
+    <updated>2017-05-21T22:25:59+01:00</updated>
+    <author>
+      <name>Murray Summers</name>
+    </author>
+    <content type="html">&lt;p&gt;
+  One of the many advantages of static sites is the simplicity to setup, configure
+  and maintain. The majority of static sites aren't huge. Some are simple blogs,
+  others are project sites and some small to medium marketing sites.
+  However, you would be mistaken to think just because it is a static site it doesn't
+  require an automated test suite.
+&lt;/p&gt;
+
+&lt;p&gt;
+  Imagine the scenario of a small marketing site for a product. It has a homepage,
+  some information on pricing and set of feature pages. Most importantly its sole
+  purpose is to convince users that your product is great. The static site's purpose is to acquire those users.
+  So why would you not treat your static site as a first class citizen and give it
+  the love and care you would for your main product? That means having tests
+  to cover the workflows that a user might go through before signing up for your product.
+&lt;/p&gt;
+
+&lt;p&gt;
+  To setup an automated test suite in &lt;a href="https://middlemanapp.com/"&gt;Middleman&lt;/a&gt; first &lt;a href="https://middlemanapp.com/basics/start-new-site/"&gt;create a new Middleman static site&lt;/a&gt;
+  or open your existing site in your editor of choice. As part of our test suite we will be using
+  &lt;a href="http://rspec.info/"&gt;RSpec&lt;/a&gt; and &lt;a href="http://teamcapybara.github.io/capybara/"&gt;Capybara&lt;/a&gt;.
+  To install these as dependencies, open up the &lt;code&gt;Gemfile&lt;/code&gt; and
+  add the following:
+&lt;/p&gt;
+
+&lt;pre class="highlight ruby"&gt;&lt;code&gt;  &lt;span class="n"&gt;group&lt;/span&gt; &lt;span class="ss"&gt;:test&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s2"&gt;"rspec"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"~&amp;gt; 3.4"&lt;/span&gt;
+    &lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s2"&gt;"capybara"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"~&amp;gt; 2.5"&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  Then run bundler:
+&lt;/p&gt;
+
+&lt;pre class="highlight shell"&gt;&lt;code&gt;  &lt;span class="nv"&gt;$ &lt;/span&gt;bundle install
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  We can now setup the configuration for RSpec and Capybara. Create the
+  required directories and files:
+&lt;/p&gt;
+
+&lt;pre class="highlight shell"&gt;&lt;code&gt;  &lt;span class="nv"&gt;$ &lt;/span&gt;mkdir -p spec/features &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; touch spec/spec_helper.rb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  This will have created a new directory called &lt;code&gt;spec/features&lt;/code&gt; where all of our tests
+  will live. This will have also created a file called &lt;code&gt;spec_helper.rb&lt;/code&gt; where all of
+  our test configuration will live.
+&lt;/p&gt;
+
+&lt;pre class="highlight shell"&gt;&lt;code&gt;  spec
+  ├── features
+  └── spec_helper.rb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  Let's now setup the test configuration. Open up &lt;code&gt;spec_helper.rb&lt;/code&gt; and add the following:
+&lt;/p&gt;
+
+&lt;pre class="highlight ruby"&gt;&lt;code&gt;  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"rspec"&lt;/span&gt;
+  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"capybara/rspec"&lt;/span&gt;
+
+  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"middleman-core"&lt;/span&gt;
+  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"middleman-core/rack"&lt;/span&gt;
+
+  &lt;span class="n"&gt;middleman_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Middleman&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;
+
+  &lt;span class="no"&gt;Capybara&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Middleman&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Rack&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;middleman_app&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nf"&gt;to_app&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="ss"&gt;:root&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;File&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;expand_path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;File&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;File&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kp"&gt;__FILE__&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;".."&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="ss"&gt;:environment&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:development&lt;/span&gt;
+    &lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="ss"&gt;:show_exceptions&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kp"&gt;false&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  Now that we have our spec configuration setup we can add our first spec.
+&lt;/p&gt;
+
+&lt;pre class="highlight shell"&gt;&lt;code&gt;  &lt;span class="nv"&gt;$ &lt;/span&gt;touch spec/features/index_spec.rb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  Within our &lt;code&gt;index_spec.rb&lt;/code&gt; we can add some simple tests:
+&lt;/p&gt;
+
+&lt;pre class="highlight ruby"&gt;&lt;code&gt;  &lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="s2"&gt;"spec_helper"&lt;/span&gt;
+
+  &lt;span class="n"&gt;describe&lt;/span&gt; &lt;span class="s2"&gt;"index page"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;type: :feature&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="n"&gt;before&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+      &lt;span class="n"&gt;visit&lt;/span&gt; &lt;span class="s2"&gt;"/"&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+
+    &lt;span class="n"&gt;it&lt;/span&gt; &lt;span class="s2"&gt;"responds successfully"&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+      &lt;span class="n"&gt;expect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;page&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;status_code&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nf"&gt;to&lt;/span&gt; &lt;span class="n"&gt;eql&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;200&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+
+    &lt;span class="n"&gt;it&lt;/span&gt; &lt;span class="s2"&gt;"has a title"&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+      &lt;span class="n"&gt;expect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;page&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nf"&gt;to&lt;/span&gt; &lt;span class="n"&gt;have_title&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Welcome to Middleman"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+
+    &lt;span class="n"&gt;it&lt;/span&gt; &lt;span class="s2"&gt;"has a heading"&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+      &lt;span class="n"&gt;expect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;page&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nf"&gt;to&lt;/span&gt; &lt;span class="n"&gt;have_selector&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"h1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;text: &lt;/span&gt;&lt;span class="s2"&gt;"Middleman is Running"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  The first test checks that when we visit the page hosted at &lt;code&gt;/&lt;/code&gt; then we will
+  receive HTTP status code of 200. The second test checks that the page title is set
+  to "Welcome to Middleman". Finally, the third test checks
+  there is a heading element with the text "Middleman is Running".
+&lt;/p&gt;
+
+&lt;p&gt;
+  We can now run the test suite:
+&lt;/p&gt;
+
+&lt;pre class="highlight shell"&gt;&lt;code&gt;  &lt;span class="nv"&gt;$ &lt;/span&gt;bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rspec spec
+  ...
+
+  Finished &lt;span class="k"&gt;in &lt;/span&gt;0.02679 seconds &lt;span class="o"&gt;(&lt;/span&gt;files took 1.29 seconds to load&lt;span class="o"&gt;)&lt;/span&gt;
+  3 examples, 0 failures
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  Look at those sweet, sweet dots. A developer's best friend, a passing test suite.
+&lt;/p&gt;
+
+&lt;p&gt;
+  These are quite simple tests but it is not hard to imagine having tests that
+  click throughout your static site, checking those all important workflows. So go out
+  there and test your limits by choosing to add a test suite for your static
+  site.
+&lt;/p&gt;
+
+&lt;p&gt;
+  Thank you to Simon Rice for &lt;a href="https://github.com/simonrice/middleman-rspec"&gt;originally coming up with this approach&lt;/a&gt;.
+&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Estimating article reading times with Middleman</title>
     <link rel="alternate" href="http://www.murraysum.com/blog/2017/02/23/estimating-article-reading-times-with-middleman/"/>
     <id>http://www.murraysum.com/blog/2017/02/23/estimating-article-reading-times-with-middleman/</id>
     <published>2017-02-23T14:07:00+00:00</published>
-    <updated>2017-02-23T18:42:21+00:00</updated>
+    <updated>2017-02-25T17:42:31+00:00</updated>
     <author>
       <name>Murray Summers</name>
     </author>
