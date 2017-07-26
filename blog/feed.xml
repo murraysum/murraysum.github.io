@@ -5,16 +5,57 @@
   <id>http://www.murraysum.com/blog</id>
   <link href="http://www.murraysum.com/blog"/>
   <link href="http://www.murraysum.com/blog/feed.xml" rel="self"/>
-  <updated>2017-05-21T15:07:00+01:00</updated>
+  <updated>2017-07-26T15:07:00+01:00</updated>
   <author>
     <name>Murray Summers</name>
   </author>
+  <entry>
+    <title>Rake up routes in Rails</title>
+    <link rel="alternate" href="http://www.murraysum.com/blog/2017/07/26/rake-up-routes-in-rails/"/>
+    <id>http://www.murraysum.com/blog/2017/07/26/rake-up-routes-in-rails/</id>
+    <published>2017-07-26T15:07:00+01:00</published>
+    <updated>2017-07-26T22:23:06+01:00</updated>
+    <author>
+      <name>Murray Summers</name>
+    </author>
+    <content type="html">&lt;p&gt;
+  As a Ruby on Rails application grows it can be difficult to keep track
+  which routes map to which controller and action. Rails attempts to combat
+  this by relying on convention over configuration. This helps to reduce the
+  cognitive load on an engineer. But a convention is just a convention.
+&lt;/p&gt;
+
+&lt;p&gt;
+  What happens when the convention isn't followed? How do you quickly
+  find which route maps to a controller action? Luckily Rails has the answer.
+&lt;/p&gt;
+
+&lt;p&gt;
+  In Rails there is a Rake task that lists all of the routes. For each route it
+  specifies the route helper, the HTTP verb and the controller action:
+&lt;/p&gt;
+
+&lt;pre class="highlight shell"&gt;&lt;code&gt;  &lt;span class="nv"&gt;$ &lt;/span&gt;bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake routes
+               Prefix Verb   URI Pattern                              Controller#Action
+       user_bookmarks POST   /users/:user_id/bookmarks&lt;span class="o"&gt;(&lt;/span&gt;.:format&lt;span class="o"&gt;)&lt;/span&gt;      bookmarks#create
+   new_user_bookmarks GET    /users/:user_id/bookmarks/new&lt;span class="o"&gt;(&lt;/span&gt;.:format&lt;span class="o"&gt;)&lt;/span&gt;  bookmarks#new
+  edit_user_bookmarks GET    /users/:user_id/bookmarks/edit&lt;span class="o"&gt;(&lt;/span&gt;.:format&lt;span class="o"&gt;)&lt;/span&gt; bookmarks#edit
+                      GET    /users/:user_id/bookmarks&lt;span class="o"&gt;(&lt;/span&gt;.:format&lt;span class="o"&gt;)&lt;/span&gt;      bookmarks#show
+                      PUT    /users/:user_id/bookmarks&lt;span class="o"&gt;(&lt;/span&gt;.:format&lt;span class="o"&gt;)&lt;/span&gt;      bookmarks#update
+                      DELETE /users/:user_id/bookmarks&lt;span class="o"&gt;(&lt;/span&gt;.:format&lt;span class="o"&gt;)&lt;/span&gt;      bookmarks#destroy
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+  Having all of this information in one place makes it trivial to trace requests
+  in your application. The next time you need to find a route rake it up in Rails.
+&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>How to test a Middleman static site</title>
     <link rel="alternate" href="http://www.murraysum.com/blog/2017/05/21/how-to-test-a-middleman-static-site/"/>
     <id>http://www.murraysum.com/blog/2017/05/21/how-to-test-a-middleman-static-site/</id>
     <published>2017-05-21T15:07:00+01:00</published>
-    <updated>2017-05-21T22:25:59+01:00</updated>
+    <updated>2017-07-26T22:18:54+01:00</updated>
     <author>
       <name>Murray Summers</name>
     </author>
@@ -157,7 +198,7 @@
     <link rel="alternate" href="http://www.murraysum.com/blog/2017/02/23/estimating-article-reading-times-with-middleman/"/>
     <id>http://www.murraysum.com/blog/2017/02/23/estimating-article-reading-times-with-middleman/</id>
     <published>2017-02-23T14:07:00+00:00</published>
-    <updated>2017-02-25T17:42:31+00:00</updated>
+    <updated>2017-07-26T22:18:54+01:00</updated>
     <author>
       <name>Murray Summers</name>
     </author>

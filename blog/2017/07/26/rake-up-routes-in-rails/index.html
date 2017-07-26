@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+
+    <title>Rake up routes in Rails - Murray Summers</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Lato|Source+Sans+Pro" rel="stylesheet">
+
+    <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/blog/feed.xml" />
+
+    <link href="http://www.murraysum.com/blog/2017/07/26/rake-up-routes-in-rails/" rel="canonical" />
+    <link href="/stylesheets/site.css" rel="stylesheet" />
+    <script src="/javascripts/all.js" async="async"></script>
+  </head>
+
+  <body class="blog blog_2017 blog_2017_07 blog_2017_07_26 blog_2017_07_26_rake-up-routes-in-rails blog_2017_07_26_rake-up-routes-in-rails_index">
+
+    <div class="full-width-row menu">
+  <div class="row menu_items">
+    <div class="columns small-4 medium-4 large-8">
+      <a href="/">MS</a>
+    </div>
+    <div class="columns small-8 medium-4 large-4 text-right">
+      <a href="/about/" class="menu_item">About</a>
+      <a href="/blog/" class="menu_item">Blog</a>
+      <a href="/projects/" class="">Projects</a>
+    </div>
+  </div>
+</div>
+
+
+    
+
+    <div class="row">
+      <div class="columns small-12">
+        <main role="main">
+            <div class="row">
+    <div class="columns medium-8 large-8">
+      <h3>Rake up routes in Rails</h3>
+      <p>RUBY ON RAILS</p>
+      <p>Estimated reading time 1 minutes</p>
+      <p>Posted on 26 Jul 2017</p>
+      <p>
+  As a Ruby on Rails application grows it can be difficult to keep track
+  which routes map to which controller and action. Rails attempts to combat
+  this by relying on convention over configuration. This helps to reduce the
+  cognitive load on an engineer. But a convention is just a convention.
+</p>
+
+<p>
+  What happens when the convention isn't followed? How do you quickly
+  find which route maps to a controller action? Luckily Rails has the answer.
+</p>
+
+<p>
+  In Rails there is a Rake task that lists all of the routes. For each route it
+  specifies the route helper, the HTTP verb and the controller action:
+</p>
+
+<pre class="highlight shell"><code>  <span class="nv">$ </span>bundle <span class="nb">exec </span>rake routes
+               Prefix Verb   URI Pattern                              Controller#Action
+       user_bookmarks POST   /users/:user_id/bookmarks<span class="o">(</span>.:format<span class="o">)</span>      bookmarks#create
+   new_user_bookmarks GET    /users/:user_id/bookmarks/new<span class="o">(</span>.:format<span class="o">)</span>  bookmarks#new
+  edit_user_bookmarks GET    /users/:user_id/bookmarks/edit<span class="o">(</span>.:format<span class="o">)</span> bookmarks#edit
+                      GET    /users/:user_id/bookmarks<span class="o">(</span>.:format<span class="o">)</span>      bookmarks#show
+                      PUT    /users/:user_id/bookmarks<span class="o">(</span>.:format<span class="o">)</span>      bookmarks#update
+                      DELETE /users/:user_id/bookmarks<span class="o">(</span>.:format<span class="o">)</span>      bookmarks#destroy
+</code></pre>
+<p>
+  Having all of this information in one place makes it trivial to trace requests
+  in your application. The next time you need to find a route rake it up in Rails.
+</p>
+
+    </div>
+  </div>
+
+        </main>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns">
+        <footer role="footer">
+          &copy; 2017 Copyright Murray Summers. All rights reserved.
+
+        </footer>
+      </div>
+    </div>
+
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92021231-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </body>
+</html>
